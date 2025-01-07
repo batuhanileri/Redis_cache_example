@@ -19,8 +19,16 @@ namespace Distributed.Caching.Controllers
         [HttpGet("set")]
         public async Task<IActionResult> SetAsync(string name,string surname) 
         {
-            await _distributedCache.SetStringAsync("name", name);
-            await _distributedCache.SetAsync("surname",Encoding.UTF8.GetBytes(surname));
+            await _distributedCache.SetStringAsync("name", name,options: new()
+            {
+                AbsoluteExpiration = DateTime.Now.AddSeconds(30),
+                SlidingExpiration  = TimeSpan.FromSeconds(10)
+            });
+            await _distributedCache.SetAsync("surname",Encoding.UTF8.GetBytes(surname), options: new()
+            {
+                AbsoluteExpiration = DateTime.Now.AddSeconds(30),
+                SlidingExpiration = TimeSpan.FromSeconds(10)
+            });
             return Ok();
         }
 
