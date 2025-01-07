@@ -33,7 +33,21 @@ namespace InMemory.Caching.Controllers
             return "";
         }
 
+        [HttpGet("setDate")]
+        public void SetDate()
+        {
+            _memoryCache.Set<DateTime>("date", DateTime.Now, options: new()
+            {
+                AbsoluteExpiration = DateTime.Now.AddMinutes(1),
+                SlidingExpiration  = TimeSpan.FromSeconds(5)
+            });
+        }
 
+        [HttpGet("getDate")]
+        public DateTime Date()
+        {
+            return _memoryCache.Get<DateTime>("date");
+        }
 
     }
 }
