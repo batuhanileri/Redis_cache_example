@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Text;
 
 namespace Distributed.Caching.Controllers
 {
@@ -14,5 +15,27 @@ namespace Distributed.Caching.Controllers
         {
             _distributedCache = distributedCache;
         }
+
+        [HttpGet("set")]
+        public async Task<IActionResult> SetAsync(string name,string surname) 
+        {
+            await _distributedCache.SetStringAsync("name", name);
+            await _distributedCache.SetAsync("surname",Encoding.UTF8.GetBytes(surname));
+            return Ok();
+        }
+
+        [HttpGet("get")]
+        public async Task<IActionResult> GetAsync()
+        {
+            var name = await _distributedCache.GetStringAsync("name");
+            var surnameBinary = await _distributedCache.GetAsync("surname");
+            var surname = Encoding.UTF8.GetString(surnameBinary);
+
+            return Ok(new
+            {
+                name,surname
+            });
+        }
+
     }
 }
